@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+
+<head>
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <title>AR.js + WebRTC test</title>
+    <!-- include three.js library -->
+    <script src='js/three.js'></script>
+    <!-- include jsartookit -->
+    <script src="jsartoolkit5/artoolkit.min.js"></script>
+    <script src="jsartoolkit5/artoolkit.api.js"></script>
+    <!-- include threex.artoolkit -->
+    <script src="threex/threex-artoolkitsource.js"></script>
+    <script src="threex/threex-artoolkitcontext.js"></script>
+    <script src="threex/threex-arbasecontrols.js"></script>
+    <script src="threex/threex-armarkercontrols.js"></script>
+    <!-- include THREE.MeshLine.js -->
+    <script src="js/THREE.MeshLine.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/three@0.115/examples/js/controls/DragControls.js"></script>
+    <script src="https://cdn.webrtc.ecl.ntt.com/skyway-4.4.0.js"></script>
+
+    <!-- 配列のdeep copy用にほしい -->
+    <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.21/lodash.min.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body style='margin : 0px; overflow: hidden; font-family: Monospace;'>
+
+    <!-- <video id="their-video" width="400px" autoplay muted playsinline></video> -->
+    <div id="canvas_wrapper">
+    </div>
+    <div>
+        <input type="range" id="ball_height" name="volume" min="0" max="100" class="vertical_slider">
+    </div>
+    <div>
+        <button class="reset" id="reset" type="button" onclick="Reset()">Reset</button>
+    </div>
+    <div>
+        <input type="range" id="ball_rotation" min="-180" max="180" class="horizontal_slider">
+    </div>
+
+    <script src="./script.js"></script>
+
+</body>
+
+</html>
