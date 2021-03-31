@@ -127,7 +127,7 @@ function initialize() {
       mouse.y = - (event.clientY / window.innerHeight) * 2 + 1;
     }
   })
-  
+
   renderer.domElement.addEventListener('touchstart', event => {
     mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
     mouse.y = - (event.clientY / window.innerHeight) * 2 + 1;
@@ -137,11 +137,13 @@ function initialize() {
     isDrawing = false;
   })
   renderer.domElement.addEventListener('touchmove', event => {
+    event.preventDefault();
     if (isDrawing) {
       mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
       mouse.y = - (event.clientY / window.innerHeight) * 2 + 1;
     }
   })
+
   document.body.appendChild(renderer.domElement);
 
   clock = new THREE.Clock();
