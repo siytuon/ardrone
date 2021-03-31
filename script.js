@@ -127,6 +127,21 @@ function initialize() {
       mouse.y = - (event.clientY / window.innerHeight) * 2 + 1;
     }
   })
+  
+  renderer.domElement.addEventListener('touchstart', event => {
+    mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+    mouse.y = - (event.clientY / window.innerHeight) * 2 + 1;
+    isDrawing = true;
+  })
+  renderer.domElement.addEventListener('touchend', event => {
+    isDrawing = false;
+  })
+  renderer.domElement.addEventListener('touchmove', event => {
+    if (isDrawing) {
+      mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+      mouse.y = - (event.clientY / window.innerHeight) * 2 + 1;
+    }
+  })
   document.body.appendChild(renderer.domElement);
 
   clock = new THREE.Clock();
@@ -263,10 +278,8 @@ function update() {
 
   ballMesh.position.y = maxBallHeight * (document.getElementById("ball_height").value / 100);
   triangleMesh.rotation.y = document.getElementById("ball_rotation").value * Math.PI / 180;
-  let record = new THREE.Vector3();
 
   if (isDrawing) {
-    record.set(camera.position.x,camera.position.y,camera.position.z);
     raycaster.setFromCamera(mouse, camera);
     let intersects = raycaster.intersectObjects([floorMesh]);
     if (intersects.length == 0) return
