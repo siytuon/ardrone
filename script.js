@@ -301,7 +301,6 @@ function update() {
     let line = new MeshLine();
     line.setPoints(points);
     lineMesh = new THREE.Mesh(line, lineMaterial);
-    console.log(record);
     sceneGroup.add(lineMesh);
   }
 }
