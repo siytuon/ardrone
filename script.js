@@ -129,8 +129,8 @@ function initialize() {
   })
 
   renderer.domElement.addEventListener('touchstart', event => {
-    mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-    mouse.y = - (event.clientY / window.innerHeight) * 2 + 1;
+    mouse.x = (event.touches[0].clientX / window.innerWidth) * 2 - 1;
+    mouse.y = - (event.touches[0].clientY / window.innerHeight) * 2 + 1;
     isDrawing = true;
   })
   renderer.domElement.addEventListener('touchend', event => {
@@ -139,8 +139,8 @@ function initialize() {
   renderer.domElement.addEventListener('touchmove', event => {
     event.preventDefault();
     if (isDrawing) {
-      mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-      mouse.y = - (event.clientY / window.innerHeight) * 2 + 1;
+      mouse.x = (event.touches[0].clientX / window.innerWidth) * 2 - 1;
+      mouse.y = - (event.touches[0].clientY / window.innerHeight) * 2 + 1;
     }
   })
 
