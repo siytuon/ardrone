@@ -15,6 +15,7 @@
     <script src="threex/threex-armarkercontrols.js"></script>
     <!-- include THREE.MeshLine.js -->
     <script src="js/THREE.MeshLine.js"></script>
+    <script src="./const.js"></script>
 
     <script src="https://cdn.jsdelivr.net/npm/three@0.115/examples/js/controls/DragControls.js"></script>
     <script src="https://cdn.webrtc.ecl.ntt.com/skyway-4.4.0.js"></script>
@@ -33,7 +34,15 @@
         <input type="range" id="ball_height" name="volume" min="0" max="100" class="vertical_slider">
     </div>
     <div>
-        <button class="reset" id="reset" type="button" onclick="Reset()">Reset</button>
+        <button class="reset btn btn-reset" id="reset" type="button" onclick="Reset()">
+            <i class="fas fa-trash-restore"></i>
+        </button>
+        <button class="btn btn-power-real" id="departure" type="button" onclick="Departure()">
+            <i class="fas fa-plane-departure"></i>
+        </button>
+        <button class="btn btn-arrival" id="arrival" type="button" onclick="Arrival()">
+            <i class="fas fa-plane-arrival"></i>
+        </button>
     </div>
     <div>
         <input type="range" id="ball_rotation" min="-180" max="180" class="horizontal_slider">
@@ -41,7 +50,25 @@
 
     <script src="./script.js"></script>
 
+
+
+    <h1>Chat</h1>
+    <div>
+        <input type="text" placeholder="PeerID" id="peer-id-input">
+        <button id="connect">Connect</button>
+        <button id="close">Close</button>
+    </div>
+    <div>
+        <p>MyID: <span id="my-id">-</span></p>
+        <p>PeerID: <span id="peer-id">-</span></p>
+    </div>
+
+    <hr>
+    <div>
+        <input type="text" placeholder="Chat Message" id="message">
+        <button id="send">Send</button>
+    </div>
+    <div id="messages"></div>
 </body>
 
 </html>
-

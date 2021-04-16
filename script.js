@@ -5,26 +5,41 @@ var shadowMesh;
 
 var markerRoot1;
 
+var visibletf;
+
 var material1, mesh1;
+
+let peer, peer_data
 let localStream;
 let ballMesh = null;
 let isDrawing = false;
 let floorMesh = null;
 
-const floorX = 5;
-const floorY = 5;
-const maxBallHeight = 1.0;
+// drone_test
+let firstrecog = false;
+
+/*4/4変更済み
+const floorX = 10;
+const floorY = 10;
+const maxBallHeight = 6.0;
+ 
+*/
 
 let p = 0.5;
 const ballPosition = new THREE.Vector3(0.3, 0.5, p);
-
+// Tello側に謎の数が送られてくる関係で (0.3,0.5,p)から(0.0,0.0,p)に変更
 var lineMesh = null;
 var points = [];
+var conn;     // データ通信用connectionオブジェクトの保存用変数 大塚
+var conn_data; 
+var contena = 0;
 
 const lineMaterial = new MeshLineMaterial({
   color: 0xffffff,
-  lineWidth: 0.2
+  lineWidth: 0.3
 });
+
+
 
 let triangleMesh = null;
 
@@ -33,8 +48,7 @@ const distance = 0.5;
 //0->webcam
 //1->webrtc
 //2->image
-let arToolkitSourceMode = 2;
-
+let arToolkitSourceMode = 0;
 
 
 // カメラ映像取得
@@ -52,17 +66,52 @@ if (arToolkitSourceMode == 0) {
   arToolkitSource = new THREEx.ArToolkitSource({sourceType: 'video'});
 
   //Peer作成
+  if(SKYWAY_API_KEY == "YOUR_KEY"){
+    window.alert("change your api key in const.js");
+  }
 
-  const peer = new Peer("seimitsu_client", {
-    key: '4ba9990d-4f5d-4948-a40c-8a75e3489885',
+  peer = new Peer("seimitsu_project_client", {
+    key: SKYWAY_API_KEY,
+    debug: 3
+  });
+
+  //Peer_data作成
+
+
+  peer_data = new Peer("seimitsu_project_client_data", {
+    key: SKYWAY_API_KEY,
     debug: 3
   });
   // 発信処理
 
-  //PeerID取得
-  peer.on('open', () => {
-    // document.getElementById('my-id').textContent = peer.id;
+
+
+  //データ通信が繋がった時の処理
+  peer_data.on('open', function() {
+    conn_data = peer_data.connect("seimitsu_project_host_data");//相手への接続を開始する大塚、ここを入れると映像が映らなくなった
+    contena = 1;
+    console.log(1)
+    conn_data.on("open", function() {//ここ変えたらエラー出なくなった =>みたいなのはダメみたい？
+      const data = {
+        name: "SkyWay",
+        msg: "Hello, World!",
+      };
+      conn_data.send(data);
+      console.log(2)
+    });
   });
+
+
+
+
+  //PeerID取得
+  peer.on('open', function() {
+    conn = peer.connect("seimitsu_project_host");
+    document.getElementById('my-id').textContent = peer.id;//自分のidを取得する。意味のないことだけど一応残しておいた
+  });
+
+
+
 
   // イベントリスナを設置する関数
   const setEventListener = mediaConnection => {
@@ -71,14 +120,37 @@ if (arToolkitSourceMode == 0) {
 
     });
   }
+
+/*
+// 相手からデータ通信の接続要求イベントが来た場合、このconnectionイベントが呼ばれる大塚
+// - 渡されるconnectionオブジェクトを操作することで、データ通信が可能
+peer.on('connection', function(connection){
+  　
+  // データ通信用に connectionオブジェクトを保存しておく
+  conn = connection;
+
+  // 接続が完了した場合のイベントの設定
+  conn.on("open", function() {
+      // 相手のIDを表示する
+      // - 相手のIDはconnectionオブジェクトのidプロパティに存在する
+      $("#peer-id").text(conn.id);
+  });
+
+  // メッセージ受信イベントの設定
+  conn.on("data", onRecvMessage);
+});
+*/
+
   // document.getElementById('make-call').onclick = () => {
   //   // const theirID = document.getElementById('their-id').value;
-  //   const theirID = "seimitsu_host"
+  //   const theirID = "seimitsu_project_host"
   //   const mediaConnection = peer.call(theirID, localStream);
   //   setEventListener(mediaConnection);
   // };
 
+
   peer.on('call', mediaConnection => {
+    console.log("callは受けている")
     mediaConnection.answer(localStream);
     setEventListener(mediaConnection);
   });
@@ -91,11 +163,14 @@ arToolkitSource = new THREEx.ArToolkitSource({
 }
 let raycaster = null;
 let mouse = null;
+
 initialize();
 animate();
+//conn.close();
 
 function initialize() {
   scene = new THREE.Scene();
+  scene.visible = false;
 
   camera = new THREE.PerspectiveCamera();
   scene.add(camera);
@@ -113,7 +188,6 @@ function initialize() {
   raycaster = new THREE.Raycaster();
   mouse = new THREE.Vector2();
   renderer.domElement.addEventListener('mousedown', event => {
-    const element = event.currentTarget;
     mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
     mouse.y = - (event.clientY / window.innerHeight) * 2 + 1;
     isDrawing = true;
@@ -127,23 +201,6 @@ function initialize() {
       mouse.y = - (event.clientY / window.innerHeight) * 2 + 1;
     }
   })
-
-  renderer.domElement.addEventListener('touchstart', event => {
-    mouse.x = (event.touches[0].clientX / window.innerWidth) * 2 - 1;
-    mouse.y = - (event.touches[0].clientY / window.innerHeight) * 2 + 1;
-    isDrawing = true;
-  })
-  renderer.domElement.addEventListener('touchend', event => {
-    isDrawing = false;
-  })
-  renderer.domElement.addEventListener('touchmove', event => {
-    event.preventDefault();
-    if (isDrawing) {
-      mouse.x = (event.touches[0].clientX / window.innerWidth) * 2 - 1;
-      mouse.y = - (event.touches[0].clientY / window.innerHeight) * 2 + 1;
-    }
-  })
-
   document.body.appendChild(renderer.domElement);
 
   clock = new THREE.Clock();
@@ -195,9 +252,12 @@ function initialize() {
 
   // build markerControls
   markerRoot1 = new THREE.Group();
+
   scene.add(markerRoot1);
+  markerRoot1.add(visibletf)
+  // markerControls1の第二変数 markerRoot1のonoffが操作されているのでその変数を適当な変数に変えればよさそう
   let markerControls1 = new THREEx.ArMarkerControls(arToolkitContext, markerRoot1, {
-    type: 'pattern', patternUrl: "data/hiro.patt",
+    type: 'pattern', patternUrl: "data/hiro.patt", changeMatrixMode: 'modelViewMatrix'
   })
 
   ////////////////////////////////////////////////////////////
@@ -274,21 +334,59 @@ function initialize() {
 
 
 function update() {
-  // update artoolkit on every frame
-  if (arToolkitSource.ready !== false)
-    arToolkitContext.update(arToolkitSource.domElement);
+//会場側から初期座標が送られてきたとき
+/*なんかうまくいかないからコメントアウト
+  if ( (conn != null) && (count == 0)){
 
-  ballMesh.position.y = maxBallHeight * (document.getElementById("ball_height").value / 100);
+    conn.on("re_data", ({ name, msg }) => 
+    {
+
+      console.log(`${name}: ${msg}`);
+      if (re_data[name] == "init_position") {
+        console.log(`最初のxは${re_data[msg]["x"]}`);
+        console.log(`最初のyは${re_data[msg]["y"]}`);
+        console.log(`最初のzは${re_data[msg]["z"]}`);
+      } 
+      count = 1;
+    });
+  }
+  */
+  // update artoolkit on every frame
+
+
+  if (arToolkitSource.ready) {
+     arToolkitContext.update(arToolkitSource.domElement);
+      firstrecog = true;
+      scene.visible = true;
+      markerRoot1.visible = true;
+
+
+
+  }
+
+  if(arToolkitSource.ready == false && firstrecog == true){
+     arToolkitContext.update(arToolkitSource.domElement);
+    scene.visible = true;
+    markerRoot1.visible = true;
+
+
+
+  }
+
+
+
+
+  ballMesh.position.y = maxBallHeight * (document.getElementById("ball_height").value / 100)
   triangleMesh.rotation.y = document.getElementById("ball_rotation").value * Math.PI / 180;
 
   if (isDrawing) {
     raycaster.setFromCamera(mouse, camera);
-    let intersects = raycaster.intersectObjects([floorMesh]);
+    const intersects = raycaster.intersectObjects([floorMesh]);
     if (intersects.length == 0) return
-    let point = sceneGroup.worldToLocal(intersects[0].point)
-    shadowMesh.position.copy(point);
-    ballMesh.position.x = shadowMesh.position.x;
-    ballMesh.position.z = shadowMesh.position.z;
+    let point = markerRoot1.worldToLocal(intersects[0].point)
+    shadowMesh.position.copy(point)
+    ballMesh.position.x = shadowMesh.position.x
+    ballMesh.position.z = shadowMesh.position.z
     triangleMesh.position.x = shadowMesh.position.x;
     triangleMesh.position.z = shadowMesh.position.z;
   }
@@ -297,12 +395,31 @@ function update() {
   let pos = ballMesh.position;
   // if distance is larger than 0.5, the point is recorded.
   let do_add = points.length > 0 ? (Math.hypot(points[num].x-pos.x,points[num].z-pos.z)>distance) || (Math.abs(points[num].y-pos.y)>distance): true;
-  if(do_add){
+
+  if(do_add && (conn_data != null)){
     sceneGroup.remove(lineMesh);
+    
+    console.log("good");
+    //conn.send("clear");// テキスト送信大塚　！！！受け取るデータ形式を受信側で指定してないとだめっみたい
+            // 自分の画面に表示大塚
+
+            const data = {
+              name: "move_to_position",
+              msg: {"posx":pos.x,"posy":pos.y,"posz":pos.z},//あとはここだけいじる
+            };
+            conn_data.send(data);
+            console.log(data);
+    //$("#messages").append($("<p>").html(peer_data.id + ": " + "clear"));
+ 
+            // 送信テキストボックスをクリア大塚
+    //$("#message").val("");
+    
     points.push(_.cloneDeep(ballMesh.position))
+
     let line = new MeshLine();
     line.setPoints(points);
     lineMesh = new THREE.Mesh(line, lineMaterial);
+
     sceneGroup.add(lineMesh);
   }
 }
@@ -317,9 +434,34 @@ function Reset() {
   sliderHeightID.value = 50;
   let sliderRotationID = document.getElementById('ball_rotation');
   sliderRotationID.value = 0;
+
+
+
+  const data = {
+    name: "reset_is_pressed",
+    msg: "reset",//あとはここだけいじる
+  };
+  conn_data.send(data);
+  console.log(2)
+}
+
+function Departure() {
+  console.log("2");
+  let start = document.getElementById('departure');
+  let end = document.getElementById('arrival');
+  start.style.display = 'none';
+  end.style.display = 'block';
+}
+
+function Arrival() {
+  let start = document.getElementById('departure');
+  let end = document.getElementById('arrival');
+  start.style.display = 'block';
+  end.style.display = 'none';
 }
 
 function render() {
+  // lineGeometry.verticesNeedUpdate = true;
   renderer.render(scene, camera);
 }
 
