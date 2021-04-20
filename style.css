@@ -1,4 +1,5 @@
 @import "https://use.fontawesome.com/releases/v5.13.0/css/all.css";
+@import url("https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap");
 
 #canvas_wrapper {
   position: relative;
@@ -305,6 +306,30 @@ button.btn-reset {
   position: absolute;
   bottom: 10%;
   right: 60px;
+}
+
+#startcount {
+  position: absolute;
+  top: 15%;
+  left: 100px;
+  z-index: 99;
+}
+
+#endcount {
+  position: absolute;
+  top: 20%;
+  left: 100px;
+  z-index: 99;
+}
+
+#PassageArea {
+  font-size: 80px;
+  font-family: 'Share Tech Mono', monospace;
+  color: #daf6ff;
+  text-shadow: 0 0 20px #0aafe6;
+  margin: 0;
+  padding-left: 100px;
+  padding-top: 10px;
 }
 
 @media screen and (max-width: 900px) {

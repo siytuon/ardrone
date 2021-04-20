@@ -449,7 +449,7 @@ function Departure() {
   console.log("2");
   let start = document.getElementById('departure');
   let end = document.getElementById('arrival');
-  start.style.display = 'none';
+  start.style.display = "none";
   end.style.display = 'block';
 }
 
@@ -458,6 +458,39 @@ function Arrival() {
   let end = document.getElementById('arrival');
   start.style.display = 'block';
   end.style.display = 'none';
+}
+
+var PassSec;
+var PassageID;
+
+function zeroPadding (num,length) {
+  return ('0000000000' + num).slice(-length);
+}
+
+function showPassage() {
+  PassSec--;
+  var m = PassSec / 60 | 0;
+  var s = PassSec % 60;
+  var msg = "";
+  if (m != 0) {
+    msg = m + ":" + zeroPadding(s,2);
+  } else if (s != 0) {
+    msg = "00:" + zeroPadding(s,2);
+  } else {
+    msg = "Game over...";
+  }
+  document.getElementById("PassageArea").innerHTML = msg;
+}
+
+function startShowing() {
+  PassSec = 300;
+  PassageID = setInterval('showPassage()',1000);
+  document.getElementById("startcount").disabled = true;
+}
+
+function endShowing() {
+  clearInterval(PassageID);
+  document.getElementById("startcount").disabled = false;
 }
 
 function render() {
