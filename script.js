@@ -468,7 +468,6 @@ function zeroPadding (num,length) {
 }
 
 function showPassage() {
-  PassSec--;
   var m = PassSec / 60 | 0;
   var s = PassSec % 60;
   var msg = "";
@@ -480,6 +479,7 @@ function showPassage() {
     msg = "Game over...";
   }
   document.getElementById("PassageArea").innerHTML = msg;
+  PassSec--;
 }
 
 function startShowing() {
