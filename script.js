@@ -483,7 +483,7 @@ function showPassage() {
 }
 
 function startShowing() {
-  PassSec = 301;
+  PassSec = 300;
   PassageID = setInterval('showPassage()',1000);
   document.getElementById("startcount").disabled = true;
 }
