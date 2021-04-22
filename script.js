@@ -445,21 +445,6 @@ function Reset() {
   console.log(2)
 }
 
-function Departure() {
-  console.log("2");
-  let start = document.getElementById('departure');
-  let end = document.getElementById('arrival');
-  start.style.display = "none";
-  end.style.display = 'block';
-}
-
-function Arrival() {
-  let start = document.getElementById('departure');
-  let end = document.getElementById('arrival');
-  start.style.display = 'block';
-  end.style.display = 'none';
-}
-
 var PassSec;
 var PassageID;
 
@@ -482,15 +467,21 @@ function showPassage() {
   PassSec--;
 }
 
-function startShowing() {
+function Departure() {
+  let start = document.getElementById('departure');
+  let end = document.getElementById('arrival');
+  start.style.display = "none";
+  end.style.display = 'block';
   PassSec = 300;
   PassageID = setInterval('showPassage()',1000);
-  document.getElementById("startcount").disabled = true;
 }
 
-function endShowing() {
+function Arrival() {
+  let start = document.getElementById('departure');
+  let end = document.getElementById('arrival');
+  start.style.display = 'block';
+  end.style.display = 'none';
   clearInterval(PassageID);
-  document.getElementById("startcount").disabled = false;
 }
 
 function render() {

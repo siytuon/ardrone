@@ -22,6 +22,8 @@ canvas{
   margin: auto;
 }
 
+
+
 /* #test_button { */
 /*     position: absolute; */
 /*     display: block; */
@@ -291,35 +293,21 @@ button.btn-reset:active i {
 
 button.btn-power-real {
   position: absolute;
-  bottom: 10%;
-  right: 300px;
+  bottom: 5%;
+  right: 260px;
 }
 
 button.btn-arrival {
   position: absolute;
-  bottom: 10%;
-  right: 180px;
+  bottom: 5%;
+  right: 140px;
   display: none;
 }
 
 button.btn-reset {
   position: absolute;
-  bottom: 10%;
-  right: 60px;
-}
-
-#startcount {
-  position: absolute;
-  top: 15%;
-  left: 100px;
-  z-index: 99;
-}
-
-#endcount {
-  position: absolute;
-  top: 20%;
-  left: 100px;
-  z-index: 99;
+  bottom: 5%;
+  right: 20px;
 }
 
 #PassageArea {
@@ -328,7 +316,7 @@ button.btn-reset {
   color: #daf6ff;
   text-shadow: 0 0 20px #0aafe6;
   margin: 0;
-  padding-left: 100px;
+  padding-left: 80px;
   padding-top: 10px;
 }
 
@@ -337,23 +325,81 @@ button.btn-reset {
     transform: scale(0.6);
     bottom: 0;
   }
-
   button.btn:active {
     transform: scale(0.6);
   }
-
   .horizontal_slider {
     right: -100px;
   }
+  button.btn-reset {
+    right: 0px;
+  }
+  button.btn-arrival {
+    right: 70px;
+  }
+  button.btn-power-real {
+    right: 140px;
+  }
+  #PassageArea {
+    padding-left: 20px;
+  }
+}
 
+@media screen and (max-width: 420px) {
+  #PassageArea {
+    padding: 5px 5px;
+    font-size: 60px;
+  }
+  .horizontal_slider {
+    right: -120px;
+  }
+  button.btn {
+    transform: scale(0.6);
+    bottom: 0;
+  }
+  button.btn:active {
+    transform: scale(0.6);
+  }
+  button.btn-reset {
+    right: -15px;
+  }
+  button.btn-arrival {
+    right: 55px;
+  }
+  button.btn-power-real {
+    right: 125px;
+  }
+}
+
+@media screen and (max-height: 560px) {
+  button.btn {
+    transform: scale(0.6);
+    bottom: 0;
+  }
+  button.btn:active {
+    transform: scale(0.6);
+  }
+  .horizontal_slider {
+    right: -100px;
+  }
+  button.btn-reset {
+    right: 0px;
+  }
+  button.btn-arrival {
+    right: 70px;
+  }
+  button.btn-power-real {
+    right: 140px;
+  }
+}
+
+@media screen and (max-height: 470px) {
   button.btn-reset {
     right: 70px;
   }
-
   button.btn-arrival {
     right: 140px;
   }
-
   button.btn-power-real {
     right: 210px;
   }
