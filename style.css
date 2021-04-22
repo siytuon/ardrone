@@ -50,7 +50,7 @@ canvas{
   position:absolute;
   width: 300px;
   transform:rotate(-90deg);
-  right: -7%;
+  right: -80px;
   top: 45%;
   padding: 0 5px;
   z-index: 99;
@@ -342,6 +342,26 @@ button.btn-reset {
   }
   #PassageArea {
     padding-left: 20px;
+    font-size: 70px;
+  }
+}
+
+@media screen and (max-height: 560px) {
+  button.btn {
+    transform: scale(0.6);
+    bottom: 0;
+  }
+  button.btn:active {
+    transform: scale(0.6);
+  }
+  button.btn-reset {
+    right: 0px;
+  }
+  button.btn-arrival {
+    right: 70px;
+  }
+  button.btn-power-real {
+    right: 140px;
   }
 }
 
@@ -371,36 +391,17 @@ button.btn-reset {
   }
 }
 
-@media screen and (max-height: 560px) {
-  button.btn {
-    transform: scale(0.6);
-    bottom: 0;
-  }
-  button.btn:active {
-    transform: scale(0.6);
-  }
-  .horizontal_slider {
-    right: -100px;
-  }
-  button.btn-reset {
-    right: 0px;
-  }
-  button.btn-arrival {
-    right: 70px;
-  }
-  button.btn-power-real {
-    right: 140px;
-  }
-}
-
 @media screen and (max-height: 470px) {
+  .horizontal_slider {
+    right: -120px;
+  }
   button.btn-reset {
-    right: 70px;
+    right: 40px;
   }
   button.btn-arrival {
-    right: 140px;
+    right: 110px;
   }
   button.btn-power-real {
-    right: 210px;
+    right: 180px;
   }
 }
