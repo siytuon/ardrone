@@ -48,7 +48,7 @@ const distance = 0.5;
 //0->webcam
 //1->webrtc
 //2->image
-let arToolkitSourceMode = 0;
+let arToolkitSourceMode = 2;
 
 
 // カメラ映像取得
