@@ -5,7 +5,8 @@ var shadowMesh;
 
 var markerRoot1;
 
-var visibletf;
+
+
 
 var material1, mesh1;
 
@@ -19,11 +20,14 @@ let floorMesh = null;
 let firstrecog = false;
 
 /*4/4変更済み
+// ここコメントアウトを元に戻さないとダメなので元に戻す
+
+*/
+
 const floorX = 10;
 const floorY = 10;
-const maxBallHeight = 6.0;
- 
-*/
+const maxBallHeight = 2.0;
+
 
 let p = 0.5;
 const ballPosition = new THREE.Vector3(0.3, 0.5, p);
@@ -48,7 +52,7 @@ const distance = 0.5;
 //0->webcam
 //1->webrtc
 //2->image
-let arToolkitSourceMode = 2;
+let arToolkitSourceMode = 0;
 
 
 // カメラ映像取得
@@ -70,15 +74,14 @@ if (arToolkitSourceMode == 0) {
     window.alert("change your api key in const.js");
   }
 
-  peer = new Peer("seimitsu_project_client", {
+  peer = new Peer(CLIENT_NAME, {
     key: SKYWAY_API_KEY,
     debug: 3
   });
 
   //Peer_data作成
 
-
-  peer_data = new Peer("seimitsu_project_client_data", {
+  peer_data = new Peer(CLIENT_DATA_NAME, {
     key: SKYWAY_API_KEY,
     debug: 3
   });
@@ -88,7 +91,7 @@ if (arToolkitSourceMode == 0) {
 
   //データ通信が繋がった時の処理
   peer_data.on('open', function() {
-    conn_data = peer_data.connect("seimitsu_project_host_data");//相手への接続を開始する大塚、ここを入れると映像が映らなくなった
+    conn_data = peer_data.connect(HOST_DATA_NAME);//相手への接続を開始する大塚、ここを入れると映像が映らなくなった
     contena = 1;
     console.log(1)
     conn_data.on("open", function() {//ここ変えたらエラー出なくなった =>みたいなのはダメみたい？
@@ -103,14 +106,11 @@ if (arToolkitSourceMode == 0) {
 
 
 
-
   //PeerID取得
   peer.on('open', function() {
-    conn = peer.connect("seimitsu_project_host");
+    conn = peer.connect(HOST_NAME);
     document.getElementById('my-id').textContent = peer.id;//自分のidを取得する。意味のないことだけど一応残しておいた
   });
-
-
 
 
   // イベントリスナを設置する関数
@@ -181,7 +181,7 @@ function initialize() {
     alpha: true
   });
   renderer.setClearColor(new THREE.Color('lightgrey'), 0)
-  renderer.setSize(1920, 1080);
+  renderer.setSize(1080, 1920);
   renderer.domElement.style.position = 'absolute'
   renderer.domElement.style.top = '0px'
   renderer.domElement.style.left = '0px'
@@ -199,6 +199,21 @@ function initialize() {
     if (isDrawing) {
       mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
       mouse.y = - (event.clientY / window.innerHeight) * 2 + 1;
+    }
+  })
+  renderer.domElement.addEventListener('touchstart', event => {
+    mouse.x = (event.touches[0].clientX / window.innerWidth) * 2 - 1;
+    mouse.y = - (event.touches[0].clientY / window.innerHeight) * 2 + 1;
+    isDrawing = true;
+  })
+  renderer.domElement.addEventListener('touchend', event => {
+    isDrawing = false;
+  })
+  renderer.domElement.addEventListener('touchmove', event => {
+    event.preventDefault();
+    if (isDrawing) {
+      mouse.x = (event.touches[0].clientX / window.innerWidth) * 2 - 1;
+      mouse.y = - (event.touches[0].clientY / window.innerHeight) * 2 + 1;
     }
   })
   document.body.appendChild(renderer.domElement);
@@ -231,6 +246,8 @@ function initialize() {
     onResize()
   });
 
+
+
   ////////////////////////////////////////////////////////////
   // setup arToolkitContext
   ////////////////////////////////////////////////////////////	
@@ -254,11 +271,15 @@ function initialize() {
   markerRoot1 = new THREE.Group();
 
   scene.add(markerRoot1);
-  markerRoot1.add(visibletf)
+//  markerRoot1.add(visibletf)
   // markerControls1の第二変数 markerRoot1のonoffが操作されているのでその変数を適当な変数に変えればよさそう
+
+  console.log("aaaaaabbbbb");
   let markerControls1 = new THREEx.ArMarkerControls(arToolkitContext, markerRoot1, {
     type: 'pattern', patternUrl: "data/hiro.patt", changeMatrixMode: 'modelViewMatrix'
   })
+
+  console.log("abvcd");
 
   ////////////////////////////////////////////////////////////
   // setup scene
@@ -331,6 +352,11 @@ function initialize() {
   // let helper = new THREE.CameraHelper( light.shadow.camera );
   // sceneGroup.add( helper );
 }
+function rotate_video(video) {
+    // var video = document.getElementById('camera');
+    //スタイルを適用する関数を定義
+    video.className = "Rotate90";
+}
 
 
 function update() {
@@ -359,21 +385,13 @@ function update() {
       firstrecog = true;
       scene.visible = true;
       markerRoot1.visible = true;
-
-
-
   }
 
   if(arToolkitSource.ready == false && firstrecog == true){
      arToolkitContext.update(arToolkitSource.domElement);
     scene.visible = true;
     markerRoot1.visible = true;
-
-
-
   }
-
-
 
 
   ballMesh.position.y = maxBallHeight * (document.getElementById("ball_height").value / 100)
@@ -424,27 +442,6 @@ function update() {
   }
 }
 
-function Reset() {
-  sceneGroup.remove(lineMesh);
-  points.length = 0;
-  ballMesh.position.set(ballPosition.x, ballPosition.y, ballPosition.z);
-  shadowMesh.position.set(ballMesh.position.x, 0.0, ballMesh.position.z);
-  triangleMesh.position.set(shadowMesh.position.x, 0.0, shadowMesh.position.z);
-  let sliderHeightID = document.getElementById('ball_height');
-  sliderHeightID.value = 50;
-  let sliderRotationID = document.getElementById('ball_rotation');
-  sliderRotationID.value = 0;
-
-
-
-  const data = {
-    name: "reset_is_pressed",
-    msg: "reset",//あとはここだけいじる
-  };
-  conn_data.send(data);
-  console.log(2)
-}
-
 var PassSec;
 var PassageID;
 
@@ -467,13 +464,39 @@ function showPassage() {
   PassSec--;
 }
 
+function Reset() {
+  sceneGroup.remove(lineMesh);
+  points.length = 0;
+  ballMesh.position.set(ballPosition.x, ballPosition.y, ballPosition.z);
+  shadowMesh.position.set(ballMesh.position.x, 0.0, ballMesh.position.z);
+  triangleMesh.position.set(shadowMesh.position.x, 0.0, shadowMesh.position.z);
+  let sliderHeightID = document.getElementById('ball_height');
+  sliderHeightID.value = 50;
+  let sliderRotationID = document.getElementById('ball_rotation');
+  sliderRotationID.value = 0;
+
+  const data = {
+    name: "button_is_pressed",
+    msg: "reset",//あとはここだけいじる
+  };
+  conn_data.send(data);
+  console.log(2)
+}
+
 function Departure() {
+  console.log("2");
   let start = document.getElementById('departure');
   let end = document.getElementById('arrival');
-  start.style.display = "none";
+  start.style.display = 'none';
   end.style.display = 'block';
   PassSec = 300;
-  PassageID = setInterval('showPassage()',1000);
+  PassageID = setInterval("showPassage()",1000);
+    const data = {
+    name: "button_is_pressed",
+    msg: "departure",//あとはここだけいじる
+  };
+  conn_data.send(data);
+  console.log(2);
 }
 
 function Arrival() {
@@ -482,6 +505,12 @@ function Arrival() {
   start.style.display = 'block';
   end.style.display = 'none';
   clearInterval(PassageID);
+    const data = {
+    name: "button_is_pressed",
+    msg: "arrival",//あとはここだけいじる
+  };
+  conn_data.send(data);
+  console.log(2)
 }
 
 function render() {
